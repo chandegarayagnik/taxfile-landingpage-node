@@ -77,8 +77,8 @@ export const getNews = async (req, res) => {
       replacements.IsDeleted = IsDeleted;
     }
     if (NewsCatUkeyId) {
-      query += " AND NewsCatUkeyId = :NewsCatUkeyId";
-      countQuery += " AND NewsCatUkeyId = :NewsCatUkeyId";
+      query += " AND nc.NewsCatUkeyId = :NewsCatUkeyId";
+      countQuery += " AND nc.NewsCatUkeyId = :NewsCatUkeyId";
       replacements.NewsCatUkeyId = NewsCatUkeyId;
     }
 
