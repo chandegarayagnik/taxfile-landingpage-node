@@ -41,6 +41,40 @@ export const createNews = async (req, res) => {
   }
 };
 
+// CREATE / UPDATE News
+export const updateCategoryStatus = async (req, res) => {
+  const {
+    UkeyId, NewsCatUkeyId = '',
+  } = req.body;
+
+  const sequelize = await dbConection();
+
+  try {
+    const IpAddress = req?.headers["x-forwarded-for"] || req?.socket?.remoteAddress || "Not Found";
+
+    let query = "";
+
+    query += `
+      UPDATE NewsMast
+        SET NewsCatUkeyId = :NewsCatUkeyId
+        WHERE UkeyId = :UkeyId
+    `;
+
+    await sequelize.query(query, {
+      replacements: { NewsCatUkeyId, UkeyId },
+    });
+
+    res.status(200).json({
+      message: "Category status updated successfully", Success : true
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message, Success : false });
+  } finally {
+    await sequelize.close();
+  }
+};
+
 // GET News (with optional filters and pagination)
 export const getNews = async (req, res) => {
   const { UkeyId, Title, IsActive, IsDeleted, Page, PageSize, Type, NewsCatUkeyId } = req.query;
