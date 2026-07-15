@@ -109,6 +109,21 @@ export const deleteBlogCategory = async (req, res) => {
   const { NewsCatUkeyId } = req.params;
   const sequelize = await dbConection();
   try{
+      const [existingNews] = await sequelize.query(
+        `
+            select Id from NewsMast
+            WHERE NewsCatUkeyId = :NewsCatUkeyId
+        `,
+        { replacements: {  NewsCatUkeyId } }
+      );
+
+      if (existingNews.length > 0) {
+        return res.status(400).json({
+          message: "Cannot delete record because it is being used.",
+          Success: false,
+        });
+      }
+
       await sequelize.query(
         `
             update NewsCategory set
