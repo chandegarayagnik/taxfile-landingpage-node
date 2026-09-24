@@ -44,7 +44,7 @@ export const createNews = async (req, res) => {
 // CREATE / UPDATE News
 export const updateCategoryStatus = async (req, res) => {
   const {
-    UkeyId, NewsCatUkeyId = '', NewsSeq = null,
+    UkeyId, NewsCatUkeyId = '', NewsSeq = null, IsActive = true, NewsDate = null
   } = req.body;
 
   const sequelize = await dbConection();
@@ -56,12 +56,12 @@ export const updateCategoryStatus = async (req, res) => {
 
     query += `
       UPDATE NewsMast
-        SET NewsCatUkeyId = :NewsCatUkeyId, NewsSeq = :NewsSeq
+        SET NewsCatUkeyId = :NewsCatUkeyId, NewsSeq = :NewsSeq, IsActive = :IsActive, NewsDate = :NewsDate
         WHERE UkeyId = :UkeyId
     `;
 
     await sequelize.query(query, {
-      replacements: { NewsCatUkeyId, UkeyId, NewsSeq },
+      replacements: { NewsCatUkeyId, UkeyId, NewsSeq, IsActive, NewsDate },
     });
 
     res.status(200).json({
