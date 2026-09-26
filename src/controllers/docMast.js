@@ -41,7 +41,7 @@ export const createDoc = async (req, res) => {
     res.status(200).json({
       message: "Docs created successfully",
       inserted: FileNames.length,
-      Success : true
+      Success: true
     });
   } catch (err) {
     console.error("Error inserting docs:", err);
@@ -60,7 +60,7 @@ export const createDoc = async (req, res) => {
       });
     }
 
-    res.status(500).json({ error: err.message, Success : true });
+    res.status(500).json({ error: err.message, Success: true });
   } finally {
     await sequelize.close();
   }
@@ -68,8 +68,8 @@ export const createDoc = async (req, res) => {
 
 // Update Carousel
 export const updateDoc = async (req, res) => {
-  const { 
-    DocUkeyId = '', Master = '', MasterUkeyId = '', Link = '', IsActive = '', UserName = req.user?.UserName, FileType, flag = "U" , Message = '', CustomerID = '', FileSize = ''
+  const {
+    DocUkeyId = '', Master = '', MasterUkeyId = '', Link = '', IsActive = '', UserName = req.user?.UserName, FileType, flag = "U", Message = '', CustomerID = '', FileSize = ''
   } = req.body;
 
   const sequelize = await dbConection();
@@ -92,7 +92,7 @@ export const updateDoc = async (req, res) => {
     //   return res.status(400).json({ error: "No file uploaded for update" });
     // }
 
-    const newFile = req.files.FileName?.[0]?.filename || req?.body?.FileName ;
+    const newFile = req.files.FileName?.[0]?.filename || req?.body?.FileName;
 
     // delete old DB row
     // await sequelize.query(
@@ -120,8 +120,8 @@ export const updateDoc = async (req, res) => {
       {
         replacements: {
           DocUkeyId,
-          FileName: newFile,
-          FileType,
+          FileName: newFile || "",
+          FileType: FileType || "",
           Master,
           MasterUkeyId,
           Link,
@@ -135,20 +135,22 @@ export const updateDoc = async (req, res) => {
         },
       }
     );
-        
+
     // delete old file if exists
     if (req?.files?.FileName && !req?.body?.FileName) {
-        await fs.unlinkSync("./media/"+ req?.params?.Master +"/" + oldDoc.FileName);
+      if (oldDoc?.FileName.length > 0) {
+        await fs.unlinkSync("./media/" + req?.params?.Master + "/" + oldDoc?.FileName);
+      }
     }
 
     res.status(200).json({
       message: "Document updated successfully",
       updatedFile: newFile,
-      Success : true
+      Success: true
     });
   } catch (err) {
     console.error("Error updating document:", err);
-    res.status(500).json({ error: err.message, Success : false });
+    res.status(500).json({ error: err.message, Success: false });
   } finally {
     await sequelize.close();
   }
@@ -269,10 +271,10 @@ export const deleteDoc = async (req, res) => {
       { replacements: { DocUkeyId } }
     );
 
-    res.status(200).json({ message: "Document deleted successfully", Success : true });
+    res.status(200).json({ message: "Document deleted successfully", Success: true });
   } catch (err) {
     console.error("Error deleting document:", err);
-    res.status(500).json({ error: err.message, Success : false });
+    res.status(500).json({ error: err.message, Success: false });
   } finally {
     await sequelize.close();
   }
