@@ -39,7 +39,7 @@ export const getBlogCategory = async (req, res) => {
     const totalCount = countResult[0]?.totalCount || 0;
 
     // 📄 Sorting (latest first)
-    query += " ORDER BY NewsCatId DESC";
+    query += " ORDER BY NewsCategory ASC";
 
     // ⏩ Pagination
     const pageNum = parseInt(Page, 10);
