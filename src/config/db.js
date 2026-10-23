@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 
-export const dbConection = async (MASTER_DB_NAME = process.env.MASTER_DB_NAME, DB_USER = process.env.DB_USER, DB_PASSWORD = process.env.DB_PASSWORD, DB_SERVER = process.env.DB_SERVER ) => {
+export const dbConection = async (MASTER_DB_NAME = process.env.MASTER_DB_NAME, DB_USER = process.env.DB_USER, DB_PASSWORD = process.env.DB_PASSWORD, DB_SERVER = process.env.DB_SERVER) => {
   const MAX_RETRIES = 5;
   const RETRY_DELAY_MS = 15000; // 3 seconds
 
@@ -40,6 +40,57 @@ export const dbConection = async (MASTER_DB_NAME = process.env.MASTER_DB_NAME, D
         await new Promise((res) => setTimeout(res, RETRY_DELAY_MS));
       } else {
         console.error("❌ All retry attempts failed. Could not connect to the database.");
+        throw err;
+      }
+    }
+  }
+};
+
+export const dbConectionCRM = async (MASTER_DB_NAME, DB_USER = process.env.TAXCRM_DB_USER, DB_PASSWORD = process.env.TAXCRM_DB_PASSWORD, DB_SERVER = process.env.TAXCRM_DB_SERVER) => {
+
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY_MS = 5000; // 5 seconds
+
+  let attempt = 0;
+  let masterConnection;
+
+  // Bypass strict TLS validation for legacy SQL Server (TLS 1.0/1.1)
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+  while (attempt < MAX_RETRIES) {
+    try {
+      masterConnection = new Sequelize(
+        MASTER_DB_NAME,
+        DB_USER,
+        DB_PASSWORD,
+        {
+          host: DB_SERVER,
+          dialect: "mssql",
+          dialectOptions: {
+            options: {
+              encrypt: false,               // Disable TLS to bypass SSL version mismatch
+              trustServerCertificate: true, // Trust self-signed/legacy certs
+              trustedConnection: false,
+              enableArithAbort: true,
+            },
+          },
+          logging: false,
+        }
+      );
+
+      await masterConnection.authenticate();
+      console.log("✅ CRM Database connected successfully...");
+      return masterConnection;
+
+    } catch (err) {
+      attempt++;
+      console.error(`❌ Database connection attempt ${attempt} failed:`, err.message);
+
+      if (attempt < MAX_RETRIES) {
+        console.log(`🔁 Retrying in ${RETRY_DELAY_MS / 1000} seconds...`);
+        await new Promise((res) => setTimeout(res, RETRY_DELAY_MS));
+      } else {
+        console.error("❌ All retry attempts failed. Could not connect to the CRM database.");
         throw err;
       }
     }
