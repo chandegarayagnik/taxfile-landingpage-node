@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 
-export const dbConection = async (MASTER_DB_NAME = process.env.MASTER_DB_NAME, DB_USER = process.env.DB_USER, DB_PASSWORD = process.env.DB_PASSWORD, DB_SERVER = process.env.DB_SERVER ) => {
+export const dbConection = async (MASTER_DB_NAME = process.env.MASTER_DB_NAME, DB_USER = process.env.DB_USER, DB_PASSWORD = process.env.DB_PASSWORD, DB_SERVER = process.env.DB_SERVER) => {
   const MAX_RETRIES = 5;
   const RETRY_DELAY_MS = 15000; // 3 seconds
 
@@ -18,12 +18,13 @@ export const dbConection = async (MASTER_DB_NAME = process.env.MASTER_DB_NAME, D
           dialect: "mssql",
           dialectOptions: {
             options: {
-              encrypt: true,
+              encrypt: DB_SERVER === "154.61.80.42" ? false : true,
               trustServerCertificate: true,
               trustedConnection: true,
             },
           },
-          logging: false,
+
+          logging: process.env.ENVIROMENT == 'DEVELOPMENT' ? true : false,
         }
       );
 

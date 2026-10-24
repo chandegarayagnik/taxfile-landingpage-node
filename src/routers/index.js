@@ -45,6 +45,7 @@ import Payout from "./payout.js";
 import emailMast from "./emailRoutes.js"
 import {dashboardList} from '../controllers/dashboard.js';
 import blogCategory from '../routers/blogCategoryRouter.js'
+import Notification from '../routers/Notification.js'
 
 const router = express.Router();
 
@@ -94,6 +95,10 @@ router.use('/email', emailMast)
 router.get('/sendOTP/:MobileNumber', OTPController);
 router.get('/dashboard', dashboardList);
 router.use('/blogCategory', blogCategory);
+
+//USING TAX CRM NOTIFICATION API
+router.use('/notification', Notification);
+
 
 
 export default router;
