@@ -101,7 +101,7 @@ export const sendNotification = async (req, res) => {
                             ? `https://taxcrmtesting.taxfile.co.in/UploadFiles/Emp/${item.AsignByDetails.Img}`
                             : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png' || "",
 
-                        image: "https://taxcrmtesting.taxfile.co.in/UploadFiles/Emp/25acf5eb-0752-460b-b3bb-b86f27aef529.png?n=701"
+                        image: "https://taxcrm.taxfile.co.in/Group%209929%20(1).png"
                     });
                     await webpush.sendNotification(
                         item.subscription,
