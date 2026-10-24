@@ -12,6 +12,9 @@ export const subscribe = async (req, res) => {
     try {
         const sequelize = await dbConection();
         const { subscription } = req.body;
+        const IpAddress = req?.headers["x-forwarded-for"] || req?.socket?.remoteAddress || "Not Found";
+
+        console.log('IpAddress :>> ', IpAddress);
 
         if (
             !subscription?.endpoint ||
@@ -54,7 +57,8 @@ export const subscribe = async (req, res) => {
                     P256dh = :P256dh,
                     Auth = :Auth,
                     IsActive = 1,
-                    UpdatedAt = GETDATE()
+                    UpdatedAt = GETDATE(),
+                    IpAddress = :IpAddress
                 WHERE Endpoint = :Endpoint
             `;
 
@@ -62,7 +66,8 @@ export const subscribe = async (req, res) => {
                 replacements: {
                     P256dh,
                     Auth,
-                    Endpoint
+                    Endpoint,
+                    IpAddress
                 }
             });
         } else {
@@ -73,7 +78,8 @@ export const subscribe = async (req, res) => {
                     P256dh,
                     Auth,
                     IsActive,
-                    CreatedAt
+                    CreatedAt,
+                    IpAddress 
                 )
                 VALUES
                 (
@@ -81,7 +87,8 @@ export const subscribe = async (req, res) => {
                     :P256dh,
                     :Auth,
                     1,
-                    GETDATE()
+                    GETDATE(),
+                    :IpAddress
                 )
             `;
 
@@ -90,6 +97,7 @@ export const subscribe = async (req, res) => {
                     Endpoint,
                     P256dh,
                     Auth,
+                    IpAddress
                 }
             });
 
@@ -114,9 +122,9 @@ export const subscribe = async (req, res) => {
 // sendNotification
 export const sendNotification = async (req, res) => {
     try {
-       const sequelize = await dbConection();
+        const sequelize = await dbConection();
 
-        const {  title, description, url, icon } = req.body;
+        const { title, description, url, icon } = req.body;
 
         console.log('req.body :>> ', req.body);
 
