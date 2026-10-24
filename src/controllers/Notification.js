@@ -12,12 +12,18 @@ webpush.setVapidDetails(
 //USING SEND NOTIFICATION
 export const sendNotification = async (req, res) => {
     // Extract CustId from decoded JWT token (authenticateJWTCRM uses jwt.decode)
-    const custid = req.user?.custid;
+    let custid = req.user?.custid;
+    if (custid === 'TAX541') {
+        custid = 'taxfilecrm'
+    }
+
+    console.log('custid :>> ', custid);
     const sequelize = await dbConection(custid, process.env.TAXCRM_DB_USER, process.env.TAXCRM_DB_PASSWORD, process.env.TAXCRM_DB_SERVER);
     const [employeeList] = await sequelize.query(
         "SELECT * FROM tblemp"
     );
-    const subscriptions = await getSubscriptionsByCustId(custid);
+    console.log('employeeList :>> ', employeeList);
+    const subscriptions = await getSubscriptionsByCustId(req.user?.custid);
     try {
         // Connect to CRM database using custid as the database name
         // const sequelize = await dbConectionCRM(custid);
@@ -30,13 +36,6 @@ export const sendNotification = async (req, res) => {
             AsignTo,
             AsignBy
         } = req.body || {};
-
-        // if (!title || !description || !url) {
-        //     return res.status(400).json({
-        //         success: false,
-        //         message: "Title, description and url are required"
-        //     });
-        // }
 
         // Support multiple IDs: "741,131660"
         // Also supports an array: [741, 131660]
