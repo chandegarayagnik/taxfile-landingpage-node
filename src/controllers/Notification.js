@@ -17,12 +17,12 @@ export const sendNotification = async (req, res) => {
         custid = 'taxfilecrm'
     }
 
-    console.log('custid :>> ', custid);
+    // console.log('custid :>> ', custid);
     const sequelize = await dbConection(custid, process.env.TAXCRM_DB_USER, process.env.TAXCRM_DB_PASSWORD, process.env.TAXCRM_DB_SERVER);
     const [employeeList] = await sequelize.query(
         "SELECT * FROM tblemp"
     );
-    console.log('employeeList :>> ', employeeList);
+    // console.log('employeeList :>> ', employeeList);
     const subscriptions = await getSubscriptionsByCustId(req.user?.custid);
     try {
         // Connect to CRM database using custid as the database name
@@ -33,9 +33,36 @@ export const sendNotification = async (req, res) => {
             url,
             icon,
             image,
-            AsignTo,
-            AsignBy
+            // AsignTo,
+            AsignBy,
+            Type,
+            TaskStatus
         } = req.body || {};
+
+        // console.log('TaskStatus :>> ', TaskStatus);
+        let { AsignTo } = req.body || {};
+
+        if (Type != 'Reverse') {
+            // TASK STATUS IS PENDING TO AIGN TO SEND NOTIFICATION
+            if (TaskStatus == 'Pending') {
+                // USING FOR ASIGN TO ID INCLUDE IN ASIGN BY TO REMOVE AIGN TO ID
+                if (String(AsignBy) == String(AsignTo)) {
+                    AsignTo = "";
+                } else {
+                    AsignTo = String(AsignTo)
+                        .split(",")
+                        .filter(id => id.trim() !== String(AsignBy).trim())
+                        .join(",");
+                }
+            } else {
+                AsignTo = "";
+            }
+        }
+
+
+        // console.log('AsignBy :>> ', AsignBy);
+        // console.log('AsignTo :>> ', AsignTo);
+
 
         // Support multiple IDs: "741,131660"
         // Also supports an array: [741, 131660]
@@ -48,10 +75,9 @@ export const sendNotification = async (req, res) => {
                 .filter(Boolean)
             : [];
 
-
         // If userIds are provided, find matching subscribers.
 
-        const targetSubscriptions = AsignToIds.length > 0
+        const targetSubscriptions = ((Type == 'Single' || Type == 'Reverse' ) && AsignToIds.length > 0)
             ? subscriptions
                 .filter(item =>
                     AsignToIds.includes(String(item.userId))
@@ -66,7 +92,7 @@ export const sendNotification = async (req, res) => {
                         AsignByDetails: AsignByDetails
                     };
                 })
-            : subscriptions.map(display => {
+            : Type == 'All' ? subscriptions.map(display => {
                 const UserDetails = employeeList.find(
                     itemEm => String(itemEm.Id) === String(display.userId)
                 );
@@ -76,11 +102,11 @@ export const sendNotification = async (req, res) => {
                     AsignToDetails: UserDetails || null,
                     AsignByDetails: AsignByDetails
                 };
-            });
+            }) : [];
 
-        console.log('targetSubscriptions :>> ', targetSubscriptions);
+        // console.log('targetSubscriptions :>> ', targetSubscriptions);
         if (targetSubscriptions.length === 0) {
-            return res.status(404).json({
+            return res.status(200).json({
                 success: false,
                 message: AsignToIds.length > 0
                     ? "No subscriptions found for the provided userIds"
@@ -91,8 +117,8 @@ export const sendNotification = async (req, res) => {
             targetSubscriptions.map(async item => {
                 try {
                     const payload = JSON.stringify({
-                        // title,
-                        title: `New Task Assigned By - ${item.AsignByDetails?.FirstName || ""} ${item.AsignByDetails?.LastName || ""}`.trim(),
+                        // title: `New Task Assigned By - ${item.AsignByDetails?.FirstName || ""} ${item.AsignByDetails?.LastName || ""}`.trim(),
+                        title: title,
                         body: description,
                         url,
                         // Dynamic icon for each employee
