@@ -41,7 +41,7 @@ export const sendNotification = async (req, res) => {
 
         // console.log('TaskStatus :>> ', TaskStatus);
         let { AsignTo } = req.body || {};
-
+        // TYPE : All | Reverse | Single
         if (Type != 'Reverse') {
             // TASK STATUS IS PENDING TO AIGN TO SEND NOTIFICATION
             if (TaskStatus == 'Pending') {
