@@ -77,7 +77,7 @@ export const sendNotification = async (req, res) => {
 
         // If userIds are provided, find matching subscribers.
 
-        const targetSubscriptions = ((Type == 'Single' || Type == 'Reverse' ) && AsignToIds.length > 0)
+        const targetSubscriptions = ((Type == 'Single' || Type == 'Reverse') && AsignToIds.length > 0)
             ? subscriptions
                 .filter(item =>
                     AsignToIds.includes(String(item.userId))
@@ -208,6 +208,19 @@ export const subscribe = async (req, res) => {
         }
 
         const { endpoint, expirationTime, keys } = subscription;
+
+        await sequelize.query(
+            ` DELETE FROM PushSubscriptions
+                WHERE UserId = :userId AND CustId = :CustId
+                `,
+            {
+                replacements: {
+                    userId: userId,
+                    CustId: CustId,
+                },
+            }
+        );
+
         // Check whether this user's endpoint already exists
         const existing = await sequelize.query(
             `
