@@ -41,6 +41,7 @@ export const createDoc = async (req, res) => {
     res.status(200).json({
       message: "Docs created successfully",
       inserted: FileNames.length,
+      FileName: FileNames[0],
       Success: true
     });
   } catch (err) {

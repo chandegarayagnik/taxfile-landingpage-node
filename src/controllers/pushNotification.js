@@ -124,7 +124,7 @@ export const sendNotification = async (req, res) => {
     try {
         const sequelize = await dbConection();
 
-        const { title, description, url, icon } = req.body;
+        const { title, description, url, icon, image } = req.body;
 
         console.log('req.body :>> ', req.body);
 
@@ -154,7 +154,7 @@ export const sendNotification = async (req, res) => {
             body: description,
             url,
             icon: icon || "",
-            // image: image || ""
+            image: image || ""
         });
 
         const results = await Promise.allSettled(
