@@ -54,6 +54,15 @@ export const sendNotification = async (req, res) => {
                         .filter(id => id.trim() !== String(AsignBy).trim())
                         .join(",");
                 }
+            } else if (TaskStatus == 'Complete') {
+                if (String(AsignBy) == String(AsignTo)) {
+                    AsignTo = "";
+                } else {
+                    AsignTo = String(AsignTo)
+                        .split(",")
+                        .filter(id => id.trim() !== String(AsignBy).trim())
+                        .join(",");
+                }
             } else {
                 AsignTo = "";
             }
@@ -74,7 +83,7 @@ export const sendNotification = async (req, res) => {
                 .map(id => String(id).trim())
                 .filter(Boolean)
             : [];
-
+        // console.log('AsignToIds :>> ', AsignToIds);
         // If userIds are provided, find matching subscribers.
 
         const targetSubscriptions = ((Type == 'Single' || Type == 'Reverse') && AsignToIds.length > 0)
