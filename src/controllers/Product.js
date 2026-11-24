@@ -143,7 +143,7 @@ export const getProducts = async (req, res) => {
       replacements.ProductName = `%${ProductName}%`;
     }
 
-    query += " ORDER BY pm.EntryDate DESC";
+    query += " ORDER BY pm.OrderId ASC";
 
     // total count
     const [countResult] = await sequelize.query(countQuery, { replacements });
