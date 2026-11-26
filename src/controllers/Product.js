@@ -30,9 +30,9 @@ export const createOrUpdateProduct = async (req, res) => {
     await sequelize.query(
       `
       INSERT INTO ProductMast
-      (ProductUkeyId, ProductName, ShortCode, CategoryId, SubUkeyId, Tagline1, Tagline2, IsActive, IsDeleted, HSNCode, OrderId, ProductWebsite, IpAddress, EntryDate, UserName, flag, crmProductUkeyId)
+      (ProductUkeyId, ProductName, ShortCode, CategoryId, SubUkeyId, Tagline1, Tagline2, IsActive, IsDeleted, HSNCode, OrderId, ProductWebsite, IpAddress, EntryDate, UserName, flag, crmProductUkeyId, ProductApp)
       VALUES
-      (:ProductUkeyId, :ProductName, :ShortCode, :CategoryId, :SubUkeyId, :Tagline1, :Tagline2, :IsActive, :IsDeleted, :HSNCode, :OrderId, :ProductWebsite, :IpAddress, GETDATE(), :UserName, :flag, :crmProductUkeyId)
+      (:ProductUkeyId, :ProductName, :ShortCode, :CategoryId, :SubUkeyId, :Tagline1, :Tagline2, :IsActive, :IsDeleted, :HSNCode, :OrderId, :ProductWebsite, :IpAddress, GETDATE(), :UserName, :flag, :crmProductUkeyId, :ProductApp)
       `,
       {
         replacements: {
@@ -48,6 +48,7 @@ export const createOrUpdateProduct = async (req, res) => {
           HSNCode: Master.HSNCode,
           OrderId: String(Master.OrderId),
           ProductWebsite: Master.ProductWebsite,
+          ProductApp: Master.ProductApp,
           IpAddress,
           UserName,
           flag,

@@ -81,6 +81,10 @@ const ProductMast = sequelize.define(
       type: DataTypes.STRING(4),
       allowNull: true,
     },
+    ProductApp: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   },
   {
     tableName: "ProductMast",
